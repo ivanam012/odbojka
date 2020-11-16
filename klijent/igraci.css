@@ -29,6 +29,8 @@
     height: 100vh;
     margin-bottom: 100px;
     padding: 10px !important;
+    box-shadow: -11px 10px 5px 0px rgba(0,0,0,0.75);
+
     border-radius: 20px;
 }
 
@@ -38,8 +40,16 @@
     border: 1px solid black;
     height: 100vh;
     margin-bottom: 100px;
-    padding: 20px !important;
+    padding: 10px !important;
     border-radius: 20px;
+    text-align: center;
+    box-shadow: 1px 10px 5px 0px rgba(0,0,0,0.75);
+
+}
+
+.smaller {
+    width: 100%;
+    height: auto !important;
 }
 
 .alignCenter {

@@ -3,7 +3,7 @@ class Database {
 	private $hostname = "localhost";
 	private $username = "root";
 	private $password = "";
-	private $dbname = "baza_biblioteka";
+	private $dbname = "odbojka";
 	private $dblink;
 	private $result = true;
 	private $records;

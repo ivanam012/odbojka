@@ -2,54 +2,44 @@
 require 'flight/Flight.php';
 require 'jsonindent.php';
 //registracija baze Database
-Flight::register('db', 'Database', array('baza_biblioteka'));
+Flight::register('db', 'Database', array('odbojka'));
 
 Flight::route('/', function(){
 	die("Izabereti neku od ruta...");
 });
-//postavljanje metode pristupa,
-//fajl kome se pristupa i 
-//funkciju koja ce se izvrsiti tom prilikom
-Flight::route('GET /biblioteka',function(){
-    //postavljanje HTTP hedera
-    //servis vraca podatke u JSON formatu
+Flight::route('GET /reprezentacija',function(){
+   
     header("Content-Type: application/json; charset=utf-8");    
     $db = Flight::db();
-    //baza izvrsava dati upit i 
-    //smesta ga u svoj atribut result
-	$db->ExecuteQuery("select * from biblioteka");
+    
+	$db->ExecuteQuery("select * from reprezentacija");
 
-	$niz =  [];
-	while ($red = $db->getResult()->fetch_object())
-	{
-		array_push($niz,$red);
-	}
-    //salje podatke klijentu
+    $niz =  sendData($db);
+    
 	echo indent(json_encode($niz));
 });
-Flight::route('GET /biblioteka/@id',function($id){
+Flight::route('GET /reprezentacija/@godina/igraci/@pol',function($godina,$pol){
+   
     header("Content-Type: application/json; charset=utf-8");    
     $db = Flight::db();
-    $db->ExecuteQuery("select * from biblioteka where id=".$id);
+    
+	$db->ExecuteQuery("select i.*, a.prvi_tim from reprezentacija r inner join angazovanje a on (r.id=a.reprezentacija) inner join igrac i on (i.id=a.igrac) where r.godina=".$godina." and i.pol='".$pol."'");
+
+    $niz =  sendData($db);
+    
+	echo indent(json_encode($niz));
+});
+Flight::route('GET /reprezentacija/@id',function($id){
+    header("Content-Type: application/json; charset=utf-8");    
+    $db = Flight::db();
+    $db->ExecuteQuery("select * from reprezentacija where id=".$id);
     
     $red = $db->getResult()->fetch_object();
 	echo indent(json_encode($red));
 });
-Flight::route('GET /biblioteka/@id/knjige',function($id){
-    header("Content-Type: application/json; charset=utf-8");    
-    $db = Flight::db();
-	$db->ExecuteQuery("select k.*, bk.broj_primeraka as 'brojPrimeraka' from knjiga k inner join biblioteka_knjiga bk on (k.id=bk.knjiga)  where bk.biblioteka=".$id);
 
-	$niz =  [];
-	while ($red = $db->getResult()->fetch_object())
-	{
-		array_push($niz,$red);
-	}
 
-	echo indent(json_encode($niz));
-});
-
-Flight::route('POST /biblioteka',function(){
+Flight::route('POST /reprezentacija',function(){
     header("Content-Type: application/json; charset=utf-8");    
     $db = Flight::db();
     //prima body parametre
@@ -57,26 +47,26 @@ Flight::route('POST /biblioteka',function(){
     //pretvara JSON tekst 
     //u asocijativni niz
     $niz = json_decode($podaci,true);
-    if(isset($niz["naziv"]) && isset($niz["adresa"])){
-        $db->ExecuteQuery("insert INTO bibiloteka(naziv,adresa) VALUES ('".$niz["naziv"]."','".$niz["adresa"]."')");
+    if(isset($niz["godina"]) && isset($niz["medalja"])){
+        $db->ExecuteQuery("insert INTO reprezentacija(godina,medalja) VALUES (".$niz["godina"].",".$niz["medalja"].")");
     }else{
         echo "Losi ulazni parametri";
     }
     echo ($db->getResult())?"uspeh":"greska";
 	
 });
-Flight::route('PUT /biblioteka/@id',function($id){
+Flight::route('PUT /reprezentacija/@id',function($id){
     header("Content-Type: application/json; charset=utf-8");    
     $db = Flight::db();
     $podaci = file_get_contents('php://input');
     $niz = json_decode($podaci,true);
     $flag=0;
-    if(isset($niz["naziv"]) ){
+    if(isset($niz["godina"]) ){
         $flag=1;
-        $db->ExecuteQuery("update biblioteka SET naziv='".$niz["naziv"]."' WHERE id=".$id);
-    }if(isset($niz["adresa"])){
+        $db->ExecuteQuery("update reprezentacija SET godina=".$niz["godina"]." WHERE id=".$id);
+    }if(isset($niz["medalja"])){
         $flag=1;
-        $db->ExecuteQuery("update biblioteka SET adresa='".$niz["adresa"]."' where id=".$id);
+        $db->ExecuteQuery("update reprezentacija SET medalja=".$niz["medalja"]." where id=".$id);
     }
     if($flag==0){
         echo "Losi ulazni parametri";
@@ -85,84 +75,37 @@ Flight::route('PUT /biblioteka/@id',function($id){
     echo ($db->getResult())?"uspeh":"greska";
 	
 });
-Flight::route('delete /biblioteka/@id',function($id){
+Flight::route('delete /reprezentacija/@id',function($id){
     header("Content-Type: application/json; charset=utf-8");
     $db = Flight::db();
-    $db->ExecuteQuery("DELETE FROM biblioteka WHERE id=".$id);
+    $db->ExecuteQuery("DELETE FROM reprezentacija WHERE id=".$id);
 
     echo ($db->getResult())?"uspeh":"greska";
 });
 
 
-Flight::route('GET /knjiga',function(){
+Flight::route('GET /igrac',function(){
     header("Content-Type: application/json; charset=utf-8");    
     $db = Flight::db();
-	$db->ExecuteQuery("select k.*, kat.naziv as 'kategorija_naziv' from knjiga k inner join kategorija_knjige kat on (kat.id=k.kategorija)");
+	$db->ExecuteQuery("select i.*, p.naziv as 'pozicija_naziv' from igrac i inner join pozicija p on (i.pozicija=p.id)");
 
-	$niz =  [];
-	while ($red = $db->getResult()->fetch_object())
-	{
-		array_push($niz,$red);
-	}
-
-	echo indent(json_encode($niz));
+	echo indent(json_encode(sendData($db)));
 });
-Flight::route('GET /knjiga/@id',function($id){
-    header("Content-Type: application/json; charset=utf-8");    
-    $db = Flight::db();
-	$db->ExecuteQuery("select k.*, kat.naziv as 'kategorija_naziv' from knjiga k inner join kategorija_knjige kat on (kat.id=k.kategorija) where k.id=".$id);
-
-	$red = $db->getResult()->fetch_object();
-	echo indent(json_encode($red));
-});
-
-Flight::route('POST /knjiga',function(){
-    header("Content-Type: application/json; charset=utf-8");    
-    $db = Flight::db();
-    $podaci = file_get_contents('php://input');
-    $niz = json_decode($podaci,true);
-    
-    if(isset($niz["naziv"]) && isset($niz["kategorija"])&& isset($niz["broj_strana"])){
-        $db->ExecuteQuery("insert INTO knjiga (naziv,kategorija,broj_strana) VALUES ('".$niz["naziv"]."',".$niz["kategorija"].",".$niz["broj_strana"].")");
-    }else{
-        echo "Losi ulazni parametri";
-    }
-    echo ($db->getResult())?"uspeh":"greska";
-	
-});
-Flight::route('PUT /knjiga/@id',function($id){
-    header("Content-Type: application/json; charset=utf-8");    
-    $db = Flight::db();
-    $podaci = file_get_contents('php://input');
-    $niz = json_decode($podaci,true);
-    $flag=0;
-    if(isset($niz["naziv"]) ){
-        $flag=1;
-        $db->ExecuteQuery("update knjiga SET naziv='".$niz["naziv"]."' WHERE id=".$id);
-    }if(isset($niz["kategorija"])){
-        $flag=1;
-        $db->ExecuteQuery("update knjiga SET kategorija=".$niz["kategorija"]." where id=".$id);
-    }
-    if(isset($niz["kategorija"])){
-        $flag=1;
-        $db->ExecuteQuery("update knjiga SET broj_strana=".$niz["broj_strana"]." where id=".$id);
-    }
-    if($flag==0){
-        echo "Losi ulazni parametri";
-        return;
-    }
-    echo ($db->getResult())?"uspeh":"greska";
-	
-});
-Flight::route('delete /knjiga/@id',function($id){
-    header("Content-Type: application/json; charset=utf-8");
-    $db = Flight::db();
-    $db->ExecuteQuery("DELETE FROM knjiga WHERE id=".$id);
-
-    echo ($db->getResult())?"uspeh":"greska";
-});
-
-
 
 Flight::start();
+
+
+    function sendData($db){
+        $result=$db->getResult();
+        if(!$result){
+            $niz["status"]=false;
+        }else{
+            $niz["status"]=true;
+            $niz["data"]=[];
+            while ($red = $result->fetch_object()){
+                $niz["data"][]=$red;
+            }
+        }
+        return $niz;
+    }
 ?>

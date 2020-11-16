@@ -9,9 +9,10 @@
 }
 
 .topHeader {
-    background-color: #292b2c;
+    background-color: #ffe4b2;
     border-bottom: 2px solid whitesmoke;
     box-shadow: 2px 7px 5px 0px rgba(0,0,0,0.75);
+    z-index: 2;
 }
 
 .leftSide {
@@ -33,15 +34,13 @@
     opacity: 0.95;
     border-radius: 50px;
     border: 3px solid burlywood;
+    padding-top: 20px !important;
 }
 
 .marginedTop {
     margin-top: 30px;
 }
 
-.grid-item {
-    border: 1px solid black;
-}
 
 .grid-container {
     width: 100%;
@@ -72,6 +71,7 @@
     grid-column-end: 3;
     grid-row-start: 2;
     grid-row-end: 3;
+    text-align: center !important;
 }
 
 .second-player {
@@ -79,6 +79,7 @@
     grid-column-end: 4;
     grid-row-start: 2;
     grid-row-end: 3;
+    text-align: center !important;
 }
 
 .third-player {
@@ -86,6 +87,7 @@
     grid-column-end: 5;
     grid-row-start: 2;
     grid-row-end: 3;
+    text-align: center !important;
 }
 
 .fourth-player {
@@ -93,6 +95,7 @@
     grid-column-end: 3;
     grid-row-start: 4;
     grid-row-end: 5;
+    text-align: center !important;
 }
 
 .fifth-player {
@@ -100,6 +103,7 @@
     grid-column-end: 4;
     grid-row-start: 4;
     grid-row-end: 5;
+    text-align: center !important;
 }
 
 .sixth-player {
@@ -107,6 +111,8 @@
     grid-column-end: 5;
     grid-row-start: 4;
     grid-row-end: 5;
+    text-align: center !important;
+    vertical-align: middle !important;
 }
 
 .container-div {
@@ -126,4 +132,68 @@
 .alignCenter {
     text-align: center;
     vertical-align: middle;
+}
+.alignLeft {
+    text-align: left;
+    vertical-align: bottom !important;
+    justify-content: left !important;
+    display: inline-block ;
+}
+.alignRight {
+    text-align: right;
+    vertical-align: bottom !important;
+    display: inline-block ;
+    justify-content: right !important;
+
+}
+.firstRow{
+    vertical-align: bottom !important;
+}
+
+.verticalAlign {
+    vertical-align: middle !important;
+    text-align: center !important;
+}
+
+.modifiedSelect {
+    padding: 5px;
+    border-radius: 5px !important;
+    vertical-align: middle !important;
+
+}
+
+#medalja {
+    border-radius: 50%;
+    height: 60px;
+    margin-left: 10px;
+}
+
+.style {
+    display: inline-block;
+}
+
+#izmenaSelect {
+    padding: 6px;
+    border-radius: 5px;
+
+}
+
+#godina {
+    width: 100px;
+}
+
+#dugme {
+    opacity: 1 !important;
+}
+
+.izmeniDugme {
+    padding: 1px !important;
+}
+
+.centered {
+    text-align: center !important;
+}
+
+#igrac_select {
+    width: 180px !important;
 }
