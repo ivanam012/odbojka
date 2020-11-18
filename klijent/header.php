@@ -3,7 +3,9 @@
 
     <div class="navbar-collapse collapse" id="navbarNav">
         <ul class="navbar-nav mx-auto">
-
+        <li class="nav-item mx-auto">
+                <label class="nav-link " id='vreme'></label>
+            </li>
             <li class="nav-item mx-auto">
                 <a class="nav-link" href="index.php">Reprezentacije</a>
             </li>
@@ -12,7 +14,7 @@
             <?php
             if(session_status()!==PHP_SESSION_ACTIVE)
                 session_start();
-            if(!isset($_SESSION["korisnik"])){
+            if(!isset($_SESSION["korisnik_id"])){
 
 
             ?>
@@ -45,3 +47,21 @@
     </div>
 
 </nav>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+     $(document).ready(function () {
+     
+      $.getJSON('http://www.7timer.info/bin/api.pl?lon=113.17&lat=23.09&product=civillight&output=json', function (data) {
+
+        let vreme = data.dataseries[0];
+        $("#vreme").html(` Dnevna temperatura:
+          Min: ${vreme.temp2m.min} 
+          Maks: ${vreme.temp2m.max}
+         `)
+
+      })
+    })
+
+
+</script>

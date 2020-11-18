@@ -1,6 +1,7 @@
 <?php 
+ if(session_status()!==PHP_SESSION_ACTIVE)
     session_start();
-    if(isset($_SESSION["korisnik"])){
+    if(isset($_SESSION["korisnik_id"])){
 
         header("Location:index.php");
     }
@@ -50,12 +51,12 @@
         $(document).ready(function () {
             $("#signUpButton").click(function (e) {
                 e.preventDefault();
-                window.location.replace('index.php');
+                window.location.replace('registracija.php');
             });
             $('#signInButton').click(function (e) {
                 e.preventDefault();
                 $.post('../server/login.php', { username: $('#username').val(), password: $('#password').val() }, function (data) {
-                    console.log(data);
+                    
                     if (data !== 'ok') {
                         alert(data);
                         return;

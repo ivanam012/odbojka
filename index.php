@@ -1,4 +1,4 @@
 <?php
-    header("Location: ./klijent/index.php")
+    header("Location: ./klijent/index.php");
 
 ?>

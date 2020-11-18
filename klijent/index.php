@@ -23,42 +23,42 @@
 
                             <div class='alignLeft modifiedSelect'>
                                 <label for='select1' name='label1'>Pol: </label>
-                                <select id='pol' value='M' class='modifiedSelect' id='select1'>
+                                <select id='pol' class='modifiedSelect' id='select1'>
                                     <option value="M">Muskarci</option>
                                     <option value="Z">Zene</option>
                                 </select>
 
                             </div>
-                            <div class='alignRight modifiedSelect'>
+                            <div class='alignLeft modifiedSelect'>
                                 <label for='select2' name='label2'>Godina:</label>
                                 <select id='godina' class='modifiedSelect' id='select2'>
 
                                 </select>
                             </div>
-                            <img src="./img//bronze.png" id='medalja'></img>
+                            <img hidden='true' src="./img//bronze.png" id='medalja'></img>
                             <hr>
                         </div>
 
                         <div class="grid-item field">
                             <!-- first row of players -->
-                            <div class='first-player'>
-                                <?php include 'igrac.php'; ?>
+                            <div class='first-player' id='1-player'>
+
                             </div>
-                            <div class="second-player">
-                                <?php include 'igrac.php'; ?>
+                            <div class="second-player" id='2-player'>
+
                             </div>
-                            <div class="third-player">
-                                <?php include 'igrac.php'; ?>
+                            <div class="third-player" id='3-player'>
+
                             </div>
                             <!-- second row of players -->
-                            <div class='fourth-player'>
-                                <?php include 'igrac.php'; ?>
+                            <div class='fourth-player' id='4-player'>
+
                             </div>
-                            <div class="fifth-player">
-                                <?php include 'igrac.php'; ?>
+                            <div class="fifth-player" id='5-player'>
+
                             </div>
-                            <div class="sixth-player">
-                                <?php include 'igrac.php'; ?>
+                            <div class="sixth-player" id='6-player'>
+
                             </div>
                         </div>
 
@@ -90,7 +90,7 @@
         </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
     <script>
@@ -103,15 +103,33 @@
                 promena();
             })
             ucitajGodine();
-
+            ucitajIgrace($('#godina').val(), $('#pol').val());
         })
 
         function ucitajIgrace(godina, pol) {
             $.getJSON(`http://localhost:80/odbojka/rest/reprezentacija/${godina}/igraci/${pol}`, function (data) {
+                refreshIgrace();
                 if (!data.status) {
                     return;
                 }
-                console.log(data.data)
+
+                const medalja = data.data[0]?.medalja;
+
+                if (medalja) {
+                    const slika = $('#medalja');
+                    if (medalja == 1) {
+                        slika.attr('src', './img/gold.png');
+                    }
+                    if (medalja == 2) {
+                        slika.attr('src', './img/silver.png');
+                    }
+                    if (medalja == 3) {
+                        slika.attr('src', './img/bronze.png');
+                    }
+                    $('#medalja').attr('hidden', false);
+                } else {
+                    $('#medalja').attr('hidden', true);
+                }
                 const igraci = data.data;
                 const prviTim = igraci.filter(function (elem) {
                     return elem.prvi_tim != 0 && elem.pozicija != 7;
@@ -122,22 +140,45 @@
                 if (trener) {
                     $('#trener').html(`Trener: ${trener.ime} ${trener.prezime}`)
                 } else {
-                    $('#trener').html('Trener: <i>nema</i> ');
+                    $('#trener').html('Trener: <i>ne postoji</i> ');
                 }
                 const izmena = igraci.filter(function (elem) {
                     return elem.prvi_tim == 0 && elem.pozicija != 7;
                 });
-                $('#izmene').html('');
+
                 for (let element of izmena) {
-                    console.log('izmena')
+
                     $('#izmene').append(`
                         <tr>
                             <td>${element.ime}</td>
                             <td>${element.prezime}</td>
                         </tr>
                     `)
-                }
+                };
 
+                const niz = [1, 2, 3, 4, 5, 6];
+                for (let broj of niz) {
+                    const igracPom = prviTim.find(function (element) {
+                        return element.pozicija == broj;
+                    });
+                    if (!igracPom) {
+                        continue;
+                    }
+                    $(`#${broj}-player`).html(`
+                    <div class="container-div">
+
+<div class="card text-white bg-dark mb-3" style="max-width: 18rem;">
+    <div class="card-header lowPadding">${igracPom.ime + ' ' + igracPom.prezime}</div>
+    <div class="card-body noPaddingTop">
+        <h8 class="card-title">${igracPom.pozicija_naziv}</h8>
+        
+    </div>
+</div>
+
+
+</div>
+                    `)
+                }
 
             })
         }
@@ -150,6 +191,11 @@
                 if (!data.status) {
                     return;
                 }
+                const godina = $('#godina').val();
+                const pol = $('#pol').val();
+
+
+
                 const godine = data.data.map(function (element) {
                     return element.godina;
                 }).sort(function (a, b) {
@@ -166,6 +212,14 @@
                 }
                 promena();
             })
+        }
+        function refreshIgrace() {
+            const niz = [1, 2, 3, 4, 5, 6];
+            for (let broj of niz) {
+                $(`#${broj}-player`).html('');
+            }
+            $('#izmene').html('');
+            $('#trener').html('Trener: <i>nema</i> ');
         }
     </script>
 
